@@ -47,14 +47,17 @@ pd.set_option('display.max_rows', 500)
 #    * The `close()` function is also a method of the file object and it is used to close the file after it's done, it will release the resources associated with the file.
 # </details>
 
-# In[ ]:
+# In[1]:
 
 
 # Open File with a "write" mode (ideally, the file should be saved to the data folder)
+file = open("data/text.txt", "w")
 
 # write the text to the file
+file.write("This is a test file.\n")
 
 # close the file
+file.close()
 
 
 # <details>
@@ -87,10 +90,19 @@ pd.set_option('display.max_rows', 500)
 # 
 # In the following code block, **Append** to the same file, `text.txt`, the following text: `This is a second line.` using the `with()` statement.
 
-# In[ ]:
+# In[2]:
 
 
 # using the "with" statement, append to the same file the following text: "This is a second line."
+with open('data/text.txt', 'a') as f:
+    f.write('This is a second line.\n')
+
+
+# In[3]:
+
+
+with open('data/text.txt', 'r') as f:
+    print(f.read())
 
 
 # <details>
@@ -105,7 +117,7 @@ pd.set_option('display.max_rows', 500)
 # ### Exercise 3
 # Create a file called data.txt and write multiple lines of numbers to it. Each line should contain 2 numbers separated by a tab. The first number should be an increment of 2 starting from 2, and the second number should be the first number raised to the power of 3 (3). Only use numbers from 2 to 20. The file should look like this:
 # ```
-# 2	1
+# 2	8
 # 4	64
 # 6	216
 # 8	512
@@ -133,10 +145,19 @@ pd.set_option('display.max_rows', 500)
 #  
 # </details>
 
-# In[ ]:
+# In[4]:
 
 
+with open('data/data.txt', 'w') as file:
+    for i in range(2, 21, 2):
+        file.write(f"{i}\t{i ** 3}\n")
 
+
+# In[5]:
+
+
+with open('data/data.txt', 'r') as file:
+    print(file.read())
 
 
 # <details>
@@ -162,13 +183,18 @@ pd.set_option('display.max_rows', 500)
 # 
 # </details>
 
-# In[ ]:
+# In[6]:
 
 
 x = []
 y = []
 
-# Write your code here
+with open('data/data.txt', 'r') as file:
+    lines = file.readlines()
+    for line in lines:
+        line_split = line.strip().split('\t')
+        x.append(line_split[0])
+        y.append(line_split[1])
 
 print("X Array: ")
 print(x)
@@ -206,10 +232,11 @@ print(y)
 #   * Make sure you import the pandas library (top cell of the notebook)
 #   * You can use the [📜`DataFrame()` function](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html) to create a new DataFrame.
 
-# In[ ]:
+# In[7]:
 
 
-test_df = 
+import pandas as pd 
+test_df = pd.DataFrame({'x': x, 'y': y})
 
 # Write your code above this line
 test_df
@@ -237,10 +264,10 @@ test_df
 #   * since your file doesn't have a header line, make sure your set the `header` parameter to `None`.
 # </details>
 
-# In[ ]:
+# In[8]:
 
 
-test_df2 = 
+test_df2 = pd.read_table('data/data.txt', header=None, names=('X', 'Y'))
 # Write your code above this line
 test_df2
 
@@ -256,10 +283,10 @@ test_df2
 # ### Exercise 2
 # rewrite the `test_df2` DataFrame to a "Comma-Separated-File" (CSV) file called `data/test-data2.csv` using the `to_csv()` function.
 
-# In[ ]:
+# In[9]:
 
 
-
+test_df2.to_csv('data/test-data2.csv', index=False)
 
 
 # 📝: Check the data folder to make sure the file was created successfully
@@ -276,10 +303,11 @@ test_df2
 # ### Exercise 3
 # Read a CSV file that's hosted remotely on the internet into a pandas DataFrame called `tips_df`. The file is located at the following URL: `https://raw.github.com/pandas-dev/pandas/main/pandas/tests/io/data/csv/tips.csv`
 
-# In[ ]:
+# In[10]:
 
 
-tips_df =
+url = "https://raw.github.com/pandas-dev/pandas/main/pandas/tests/io/data/csv/tips.csv"
+tips_df = pd.read_csv(url)
 
 # Write your code above this line
 tips_df
@@ -324,10 +352,26 @@ tips_df
 # df = pd.read_csv('data/law-school-admissions-bar-passage/bar_pass_prediction.csv')
 # ```
 
-# In[ ]:
+# In[15]:
 
 
-# Empty cell to write your code
+get_ipython().system('pip install opendatasets')
+
+
+# In[16]:
+
+
+import opendatasets as od
+
+od.download("https://www.kaggle.com/danofer/law-school-admissions-bar-passage", data_dir="data")
+od.download("https://www.kaggle.com/datasets/tunguz/us-elections-dataset", data_dir="data")
+
+
+# In[17]:
+
+
+df = pd.read_csv('data/law-school-admissions-bar-passage/bar_pass_prediction.csv')
+df.head()
 
 
 # 🚩 If you haven't already been updating committing your code to GitHub, this is a reminder to do so.
@@ -366,12 +410,37 @@ zipfile.extractall('./data')
 zipfile.close();
 
 
+# In[22]:
+
+
+# Above code was not working for me
+from urllib.request import Request, urlopen
+from zipfile import ZipFile
+from io import BytesIO
+
+url = 'https://www.sqlitetutorial.net/wp-content/uploads/2018/03/chinook.zip'
+req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+
+with urlopen(req) as response:
+    zip_bytes = response.read()
+
+with ZipFile(BytesIO(zip_bytes), 'r') as zipfile:
+    zipfile.extractall('./data')
+
+
 # ## Exercise 1: Create a connection to the chinook database (solved)
 # 
 
-# In[ ]:
+# In[28]:
 
 
+get_ipython().run_line_magic('pip', 'install sqlalchemy')
+
+
+# In[29]:
+
+
+from sqlalchemy import create_engine
 # This time, I'm providing the code to set up the database connection
 from sqlalchemy import create_engine
 
@@ -381,6 +450,7 @@ engine = create_engine(connection_string)
 
 db_connection = engine.connect()
 # We will be using this variable to make queries to the database
+
 
 
 # ❓**Point out one bad practice in the snippet above.** (Write your answer here)
@@ -409,10 +479,10 @@ db_connection = engine.connect()
 # ### Exercise 2: 
 # Read everything (*) in the `genres` table into a pandas DataFrame called `genres_df`
 
-# In[ ]:
+# In[30]:
 
 
-genres_df = 
+genres_df = pd.read_sql(sql='SELECT * FROM genres;', con=db_connection)
 
 # Write your code above this line
 genres_df
@@ -439,8 +509,21 @@ genres_df
 # </details>
 # 
 
-# In[ ]:
+# In[31]:
 
+
+sql = '''
+SELECT
+    a.Title AS AlbumTitle,
+    t.Name AS TrackName,
+    a.ArtistId AS ArtistId
+FROM
+    albums a
+    INNER JOIN tracks t ON t.AlbumId = a.AlbumId
+WHERE
+    t.Name LIKE '%tomorrow%'
+'''
+albums_df = pd.read_sql(sql=sql, con=db_connection)
 
 # Write your code above this line
 albums_df
@@ -478,8 +561,22 @@ albums_df
 # </details>
 # 
 
-# In[ ]:
+# In[32]:
 
+
+sql = '''
+SELECT
+    DISTINCT artists.ArtistId AS ArtistId,
+    artists.Name AS ArtistName
+FROM
+    artists
+    JOIN albums ON artists.ArtistId = albums.ArtistId
+    JOIN tracks ON albums.AlbumId = tracks.AlbumId
+    JOIN genres ON tracks.GenreId = genres.GenreId
+WHERE
+    genres.Name = 'Rock'
+'''
+rock_artists_df = pd.read_sql(sql=sql, con=db_connection)
 
 # Write your code above this line
 rock_artists_df
@@ -522,8 +619,13 @@ rock_artists_df
 #   ```
 # </details>
 
-# In[ ]:
+# In[33]:
 
+
+genres_data = pd.concat([
+    genres_df,
+    pd.DataFrame({'GenreId': [26], 'Name': ['Arabic Pop']})
+], ignore_index=True)
 
 # Write your code above this line
 genres_data
@@ -587,7 +689,7 @@ genres_data2
 # ## Wrap up
 # Remember to update the self reflection and self evaluations on the `README` file.
 
-# In[ ]:
+# In[1]:
 
 
 # 🦉: The following command converts this Jupyter notebook to a Python script.
