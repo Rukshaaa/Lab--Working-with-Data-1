@@ -1,0 +1,14 @@
+ipykernel==6.30.1
+black==24.10.0
+numpy==1.26.4
+testbook==0.4.2
+pytest==9.0.2
+jupyter==1.1.1
+opendatasets==0.1.22
+pandas==2.3.3
+SQLAlchemy==2.0.32
+python-dotenv==1.2.1
+requests==2.31.0
+matplotlib==3.10.8
+plotly==5.16.1
+seaborn==0.12.2
